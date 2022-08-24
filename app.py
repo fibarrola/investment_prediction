@@ -1,4 +1,5 @@
 from dash import Dash, dcc, html, Input, Output
+from src.fig_functions import money_graph
 import plotly.express as px
 import pandas as pd
 
@@ -17,13 +18,24 @@ fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
 app.layout = html.Div(children=[
     html.H1(children='Hello Dash'),
 
-    html.Div(children='''
-        Dash: A web application framework for your data.
-    '''),
+    html.Div([
+        "Dinero inicial: u$d ",
+        dcc.Input(id='initial_money', value=19000, type='number')
+    ]),
 
     html.Div([
-        "Input: ",
-        dcc.Input(id='my-input', value='initial value', type='text')
+        "Interés: % ",
+        dcc.Input(id='interest_rate', value=20, type='number')
+    ]),
+
+    html.Div([
+        "Tiempo de retorno (meses) : ",
+        dcc.Input(id='return_time', value=36, type='number')
+    ]),
+
+    html.Div([
+        "Inversión mensual: u$d ",
+        dcc.Input(id='monthly_inv', value=200, type='number')
     ]),
 
     html.Br(),
@@ -36,11 +48,21 @@ app.layout = html.Div(children=[
 ])
 
 @app.callback(
-    Output(component_id='my-output', component_property='children'),
-    Input(component_id='my-input', component_property='value')
+    Output(component_id='example-graph', component_property='figure'),
+    Input(component_id='initial_money', component_property='value'),
+    Input(component_id='interest_rate', component_property='value'),
+    Input(component_id='return_time', component_property='value'),
+    Input(component_id='monthly_inv', component_property='value')
 )
-def update_output_div(input_value):
-    return f'Output: {input_value}'
+def update_graph(input_value, interest_rate, return_time, monthly_inv):
+    return money_graph(input_value, interest_rate, return_time, monthly_inv)
+
+# @app.callback(
+#     Output(component_id='example-graph', component_property='figure'),
+#     Input(component_id='interest_rate', component_property='value')
+# )
+# def update_graph(input_value):
+#     return money_graph(input_value)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
